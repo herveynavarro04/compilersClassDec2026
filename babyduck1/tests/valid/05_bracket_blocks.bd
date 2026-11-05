@@ -1,0 +1,8 @@
+program blocks;
+var a, b : int;
+main {
+  [ a = 1; b = 2; print(a + b); ]
+  [ ]
+  if (a < b) { [ a = b; [ read(a); ] ] };
+}
+end

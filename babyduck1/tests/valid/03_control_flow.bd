@@ -1,0 +1,16 @@
+program flow;
+var i, total : int;
+main {
+  read(total);
+  i = 0;
+  while (i < total) do {
+    if (i > 5) {
+      print("big: ", i);
+    } else {
+      print("small: ", i);
+    };
+    i = i + 1;
+  };
+  if (i != total) { print("unexpected"); };
+}
+end

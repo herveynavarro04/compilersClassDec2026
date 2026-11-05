@@ -1,0 +1,22 @@
+program functions;
+var result : int;
+void greet(n : int, f : float) [
+  var tmp : int;
+  { print("n = ", n, " f = ", f); }
+];
+int double(x : int) [
+  { return x * 2; }
+];
+float average(a : int, b : int) [
+  var s : float;
+  {
+    s = (a + b) / 2;
+    return s;
+  }
+];
+main {
+  greet(1, 2.5);
+  result = double(3) + 1;
+  print(average(4, 5));
+}
+end
