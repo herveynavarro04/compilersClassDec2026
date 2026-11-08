@@ -25,6 +25,7 @@ ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 # ---------- Executable ----------
 add_executable(babyduck
     main.cpp
+    semantic_cube/semantic_cube.cpp
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Lexer_OUTPUTS})
 
