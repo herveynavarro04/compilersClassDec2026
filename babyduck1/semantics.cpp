@@ -4,52 +4,101 @@
 
 extern int yylineno;
 
-static FuncDirectory dir;
+static std::unique_ptr<FuncDirectory> dir;
 static std::string program_name;
 static std::string current_func;
+static Type current_type = ERROR_T;
 static std::vector<std::string> pending_ids;
 
-// Error print 
 static void semantic_error(const std::string &msg) {
     std::fprintf(stderr, "Semantic error (line %d): %s\n", yylineno, msg.c_str());
     std::exit(4);
 };
 
-// Inserts a variable into the CURRENT scope
-static void add_variables(const std::string &name, Type type) {
-    VarTable &table = dir[current_func].vars;
-    if (table.count(name)) {
-        semantic_error("variable '" + name + "' already declared in '" + current_func + "'");
-    };
-    table[name] = {type};
-};
+static void add_to_current_vartable(const std::string &name) {
+    VarTable &table = *(*dir)[current_func].vars;
+    if (table.count(name)){
+        semantic_error("multiple declaration of '" + name + "' in '" + current_func + "'");
+    }
+    table[name] = {current_type};
+}
 
-// NP1: create the directory and the global scope 
-void np_start_program(const char *name) {
+void np1_create_dirfunc() {
+    dir = std::make_unique<FuncDirectory>();
+}
+
+void np2_add_program(const char *name) {
     program_name = name;
     current_func = name;
-    dir[name] = {VOID_T, {}, {}};
+    (*dir)[name].returnType = VOID_T;
+}
+
+void np3_ensure_vartable() {
+    FuncInfo &f = (*dir)[current_func];
+    if (!f.vars) {
+        f.vars = std::make_unique<VarTable>();
+    }
 };
 
-// NP2: appends pending ids into the stack
-void np_add_pending_id(const char *name) {
+void np4_set_current_type(int type) {
+    current_type = static_cast<Type>(type);
+};
+
+void np5_queue_id(const char *name) {
     pending_ids.push_back(name);
 };
 
-// NP3: insert every pending id with that type
-void np_declare_pending_vars(int type) {
-    for (const std::string &id: pending_ids) {
-        add_variables(id, static_cast<Type>(type));  
+void np5_add_vars() {
+    for (const std::string &id : pending_ids) {
+        add_to_current_vartable(id);
     }
     pending_ids.clear();
 };
 
-void np_start_function(const char *name, int type) {
-    if (dir.count(name))
-        semantic_error("function '" + std::string(name) + "' already declared");
-    if (dir[program_name].vars.count(name))
+void np6_delete_dirfunc() {
+    dir.reset();
+};
+
+void np7_prepare_function() {
+    current_type = ERROR_T;
+};
+
+void np8_set_void() {
+    current_type = VOID_T;
+};
+
+void np9_add_function(const char *name) {
+    if (dir->count(name)) {
+        semantic_error("multiple declaration of function '" + std::string(name) + "'");
+    }
+    FuncInfo &global = (*dir)[program_name];
+    if (global.vars && global.vars->count(name)) {
         semantic_error("'" + std::string(name) + "' is already a global variable");
-    dir[name] = {static_cast<Type>(type), {}, {}};
+    }
+    (*dir)[name].returnType = current_type;
     current_func = name;
 };
 
+void np10_create_function_vartable() {
+    (*dir)[current_func].vars = std::make_unique<VarTable>();
+};
+
+void np11_add_param(const char *name) {
+    add_to_current_vartable(name);
+    (*dir)[current_func].params.push_back(current_type);
+};
+
+void np12_delete_function_vartable() {
+    FuncInfo &f = (*dir)[current_func];
+    f.vars.reset();
+    current_func = program_name;
+};
+
+void np13_check_var_declared(const char *name) {
+    const VarTable *local = (*dir)[current_func].vars.get();
+    const VarTable *global = (*dir)[program_name].vars.get();
+    if ((local && local->count(name)) || (global && global->count(name))) {
+        return;
+    }
+    semantic_error("undeclared variable '" + std::string(name) + "'");
+};

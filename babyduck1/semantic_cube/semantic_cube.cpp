@@ -13,7 +13,7 @@ static const Type cube[2][2][8] = {
    /*right = int*/ 
    { FLOAT_T, FLOAT_T, FLOAT_T, FLOAT_T, BOOL_T, BOOL_T, BOOL_T, FLOAT_T },
     /*right = float*/ 
-    { FLOAT_T, FLOAT_T, FLOAT_T, FLOAT_T, BOOL_T, BOOL_T, BOOL_T, FLOAT_T }
+   { FLOAT_T, FLOAT_T, FLOAT_T, FLOAT_T, BOOL_T, BOOL_T, BOOL_T, FLOAT_T }
  }
 };
 

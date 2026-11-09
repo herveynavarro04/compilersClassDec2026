@@ -1,7 +1,7 @@
 #pragma once
-#include <string>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 #include "semantic_cube/semantic_cube.h"
 
 /*Variable table*/
@@ -14,20 +14,22 @@ using VarTable = std::unordered_map<std::string, VarInfo>;
 struct FuncInfo {
     Type returnType;
     std::vector<Type> params;
-    VarTable vars;
+    std::unique_ptr<VarTable> vars;
 };
 using FuncDirectory = std::unordered_map<std::string, FuncInfo>;
 
 /*Neuralgic point actions*/
-void np_start_program(const char *name);              
-void np_add_pending_id(const char *name);             
-void np_declare_pending_vars(int type);               
-void np_start_function(const char *name, int type);   
-void np_add_param(const char *name, int type);        
-void np_end_function();                               
-void np_start_main();                                 
-void np_check_var_exists(const char *name);           
-void np_check_func_exists(const char *name);          
-
-/*Debug*/
-void print_dir();
+void np1_create_dirfunc();                     
+void np2_add_program(const char *name);        
+void np3_ensure_vartable();                    
+void np4_set_current_type(int type);           
+void np5_queue_id(const char *name);           
+void np5_add_vars();                           
+void np6_delete_dirfunc();                     
+void np7_prepare_function();                   
+void np8_set_void();                           
+void np9_add_function(const char *name);       
+void np10_create_function_vartable();          
+void np11_add_param(const char *name);         
+void np12_delete_function_vartable();
+void np13_check_var_declared(const char *name);

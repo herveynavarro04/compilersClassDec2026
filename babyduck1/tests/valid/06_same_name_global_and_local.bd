@@ -1,0 +1,11 @@
+program scopes;
+var x : int;
+void f(y : int) [
+  var x : float;
+  { x = y + 1.5; }
+];
+main {
+  x = 2;
+  f(x);
+}
+end
