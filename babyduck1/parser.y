@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "semantics.h"
+#include "quadruples.h"
 int  yylex();                 
 void yyerror(const char *s);  
 extern int yylineno;          
@@ -145,9 +146,7 @@ statement
 
 /* <ASSIGN> -> id = <EXPRESSION> ; */
 assign
-    : ID
-      '='                       { np13_check_var_declared($1); }     /* 13 */
-      expression ';'
+    : ID '=' expression ';'     { npq12_assign($1); }                /* Q12 */
     ;
 
 /* <CONDITION> -> if ( <EXPRESSION> ) <Body> <ElsePart> ; */
@@ -179,13 +178,13 @@ print_list
 
 /* <PrintItem> -> <EXPRESSION> | cte_string */
 print_item
-    : expression
-    | CTE_STRING
+    : expression                { npq13_print_expression(); }        /* Q13 */
+    | CTE_STRING                { npq14_print_string($1); }          /* Q14 */
     ;
 
 /* <Read> -> read ( id ) ; */
 read
-    : READ '(' ID ')' ';'       { np13_check_var_declared($3); }     /* 13 */
+    : READ '(' ID ')' ';'       { npq15_read($3); }                  /* Q15 */
     ;
 
 /* <Return> -> return <EXPRESSION> ; */
@@ -198,44 +197,53 @@ return_stmt
 /* <EXPRESSION> -> <EXP> | <EXP> <RelOp> <EXP> */
 expression
     : exp
-    | exp '<' exp
-    | exp '>' exp
-    | exp NE  exp
+    | exp '<'                   { npq9_push_rel_op(LT); }            /* Q9  */
+      exp                       { npq10_gen_rel(); }                 /* Q10 */
+    | exp '>'                   { npq9_push_rel_op(GT); }            /* Q9  */
+      exp                       { npq10_gen_rel(); }                 /* Q10 */
+    | exp NE                    { npq9_push_rel_op(NE_OP); }         /* Q9  */
+      exp                       { npq10_gen_rel(); }                 /* Q10 */
     ;
 
 /* <EXP> -> <TERM> <MoreTerms>      (+, -) */
 exp
-    : exp '+' term
-    | exp '-' term
-    | term
+    : exp '+'                   { npq2_push_add_sub(ADD); }          /* Q2 */
+      term                      { npq4_gen_add_sub(); }              /* Q4 */
+    | exp '-'                   { npq2_push_add_sub(SUB); }          /* Q2 */
+      term                      { npq4_gen_add_sub(); }              /* Q4 */
+    | term                      { npq4_gen_add_sub(); }              /* Q4 */
     ;
 
 /* <TERM> -> <FACTOR> <MoreFactors> (*, /) */
 term
-    : term '*' factor
-    | term '/' factor
-    | factor
+    : term '*'                  { npq3_push_mul_div(MUL); }          /* Q3 */
+      factor                    { npq5_gen_mul_div(); }              /* Q5 */
+    | term '/'                  { npq3_push_mul_div(DIV); }          /* Q3 */
+      factor                    { npq5_gen_mul_div(); }              /* Q5 */
+    | factor                    { npq5_gen_mul_div(); }              /* Q5 */
     ;
 
 /* <FACTOR> -> ( <EXPRESSION> ) | <Sign> <FactorValue> | <F_Call> */
 factor
-    : '(' expression ')'
+    : '('                       { npq7_push_fake_bottom(); }         /* Q7 */
+      expression
+      ')'                       { npq8_pop_fake_bottom(); }          /* Q8 */
     | '+' factor_value
-    | '-' factor_value
+    | '-' factor_value          { npq11_unary_minus(); }             /* Q11 */
     | factor_value
     | f_call
     ;
 
 /* <FactorValue> -> id | <CTE> */
 factor_value
-    : ID                        { np13_check_var_declared($1); }     /* 13 */
+    : ID                        { npq1_push_operand($1); }           /* Q1 */
     | cte
     ;
 
 /* <CTE> -> cte_int | cte_float */
 cte
-    : CTE_INT
-    | CTE_FLOAT
+    : CTE_INT                   { npq6_push_constant($1, INT_T); }   /* Q6 */
+    | CTE_FLOAT                 { npq6_push_constant($1, FLOAT_T); } /* Q6 */
     ;
 
 /* ---------- Function calls ---------- */

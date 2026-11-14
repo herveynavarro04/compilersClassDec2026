@@ -27,6 +27,7 @@ add_executable(babyduck
     main.cpp
     semantics.cpp                        # ← adjust if it's in a folder
     semantic_cube/semantic_cube.cpp
+    quadruples.cpp
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Lexer_OUTPUTS})
 

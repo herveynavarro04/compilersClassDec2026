@@ -1,7 +1,6 @@
 #pragma once
-#include <unordered_map>
 #include <vector>
-#include <memory>
+#include <unordered_map>
 #include "semantic_cube/semantic_cube.h"
 
 /*Variable table*/
@@ -33,3 +32,10 @@ void np10_create_function_vartable();
 void np11_add_param(const char *name);         
 void np12_delete_function_vartable();
 void np13_check_var_declared(const char *name);
+
+/*Look for variable current type*/
+Type var_type(const char *name);
+
+/*error logs*/
+[[noreturn]] void semantic_error(const std::string &msg);
+[[noreturn]] void internal_error(const std::string &msg);

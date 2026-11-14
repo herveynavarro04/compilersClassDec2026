@@ -18,7 +18,7 @@ static const Type cube[2][2][8] = {
 };
 
 Type check_types(Type left, Op op, Type right) {
-    if (left > FLOAT_T || right > FLOAT_T) return ERROR_T;
+    if (left > FLOAT_T || right > FLOAT_T || op > ASSIGN) return ERROR_T;
     return cube[left][right][op];
 };
 
@@ -30,4 +30,22 @@ const char *type_name(Type t) {
     case VOID_T: return "void";
     default: return "error";
  }
-};
+}
+
+const char *op_symbol(Op op) {
+   switch (op) {
+       case ADD:    return "+";
+       case SUB:    return "-";
+       case MUL:    return "*";
+       case DIV:    return "/";
+       case LT:     return "<";
+       case GT:     return ">";
+       case NE_OP:  return "!=";
+       case ASSIGN: return "=";
+       case FAKE_BOTTOM: return "(";
+       case OP_PRINT: return "print";
+       case OP_READ: return "read";
+       default:     return "?";
+   }
+}
+

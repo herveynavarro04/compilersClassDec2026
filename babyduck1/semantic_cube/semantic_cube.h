@@ -17,7 +17,10 @@ enum Op {
     LT = 4,
     GT = 5, 
     NE_OP = 6,
-    ASSIGN = 7
+    ASSIGN = 7,
+    FAKE_BOTTOM = 8,
+    OP_PRINT = 9,
+    OP_READ = 10
 };
 
 // Returns the result type of (left op right), or ERROR_T if not allowed.
@@ -25,3 +28,4 @@ Type check_types(Type left, Op op, Type right);
 
 // Returns types as strings for error messages
 const char *type_name(Type t);
+const char *op_symbol(Op op);

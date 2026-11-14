@@ -10,10 +10,15 @@ static std::string current_func;
 static Type current_type = ERROR_T;
 static std::vector<std::string> pending_ids;
 
-static void semantic_error(const std::string &msg) {
+void semantic_error(const std::string &msg) {
     std::fprintf(stderr, "Semantic error (line %d): %s\n", yylineno, msg.c_str());
     std::exit(4);
-};
+}
+
+void internal_error(const std::string &msg) {
+    std::fprintf(stderr, "Internal compiler error (line %d): %s\n", yylineno, msg.c_str());
+    std::exit(5);
+}
 
 static void add_to_current_vartable(const std::string &name) {
     VarTable &table = *(*dir)[current_func].vars;
@@ -21,6 +26,24 @@ static void add_to_current_vartable(const std::string &name) {
         semantic_error("multiple declaration of '" + name + "' in '" + current_func + "'");
     }
     table[name] = {current_type};
+}
+
+Type var_type(const char *name) {
+    FuncInfo &f = (*dir)[current_func];
+    if (f.vars) {
+        auto curr_var = f.vars->find(name);
+        if (curr_var != f.vars->end()) {
+            return curr_var->second.type;
+        }
+    }
+    FuncInfo &global = (*dir)[program_name];
+    if (global.vars) {
+        auto curr_var = global.vars->find(name);
+        if (curr_var != global.vars->end()) {
+            return curr_var->second.type;
+        }
+    }
+    semantic_error("variable '" + std::string(name) + "' not declared");
 }
 
 void np1_create_dirfunc() {
@@ -38,34 +61,34 @@ void np3_ensure_vartable() {
     if (!f.vars) {
         f.vars = std::make_unique<VarTable>();
     }
-};
+}
 
 void np4_set_current_type(int type) {
     current_type = static_cast<Type>(type);
-};
+}
 
 void np5_queue_id(const char *name) {
     pending_ids.push_back(name);
-};
+}
 
 void np5_add_vars() {
     for (const std::string &id : pending_ids) {
         add_to_current_vartable(id);
     }
     pending_ids.clear();
-};
+}
 
 void np6_delete_dirfunc() {
     dir.reset();
-};
+}
 
 void np7_prepare_function() {
     current_type = ERROR_T;
-};
+}
 
 void np8_set_void() {
     current_type = VOID_T;
-};
+}
 
 void np9_add_function(const char *name) {
     if (dir->count(name)) {
@@ -77,22 +100,22 @@ void np9_add_function(const char *name) {
     }
     (*dir)[name].returnType = current_type;
     current_func = name;
-};
+}
 
 void np10_create_function_vartable() {
     (*dir)[current_func].vars = std::make_unique<VarTable>();
-};
+}
 
 void np11_add_param(const char *name) {
     add_to_current_vartable(name);
     (*dir)[current_func].params.push_back(current_type);
-};
+}
 
 void np12_delete_function_vartable() {
     FuncInfo &f = (*dir)[current_func];
     f.vars.reset();
     current_func = program_name;
-};
+}
 
 void np13_check_var_declared(const char *name) {
     const VarTable *local = (*dir)[current_func].vars.get();
@@ -101,4 +124,4 @@ void np13_check_var_declared(const char *name) {
         return;
     }
     semantic_error("undeclared variable '" + std::string(name) + "'");
-};
+}
