@@ -1,0 +1,7 @@
+program bad_read;
+var a : int;
+main {
+  a = 0;
+  read(z);
+}
+end

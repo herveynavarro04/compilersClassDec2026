@@ -1,0 +1,13 @@
+program parens;
+var a, b, c, r : int;
+main {
+  a = 2;
+  b = 3;
+  c = 4;
+  r = -a;
+  r = (a + b) * (c - a);
+  r = ((a + b) * (c - a)) + 1;
+  r = (a + (b * (c - a)));
+  r = -a - -b;
+}
+end

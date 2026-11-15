@@ -1,0 +1,10 @@
+program io;
+var x, y : int;
+main {
+  read(x);
+  read(y);
+  print("x is ", x);
+  print("sum = ", x + y, " done");
+  print(x * 2 + y);
+}
+end

@@ -1,0 +1,19 @@
+program relational;
+var a, b, c : int;
+main {
+  a = 1;
+  b = 2;
+  c = 3;
+  if (a + b < c * 2) {
+    print("lt");
+  } else {
+    print("ge");
+  };
+  if (a * b > c - 1) {
+    print("gt");
+  };
+  while (a + 1 != b * c) do {
+    a = a + 1;
+  };
+}
+end

@@ -1,0 +1,7 @@
+program bad_expr;
+var a : int;
+main {
+  a = 1;
+  a = a + z;
+}
+end

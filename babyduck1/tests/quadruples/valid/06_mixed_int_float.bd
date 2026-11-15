@@ -1,0 +1,12 @@
+program mixed;
+var i, j : int;
+    f, g : float;
+main {
+  i = 2;
+  j = 3;
+  f = 1.5;
+  g = i + f;
+  g = f + j * 2;
+  g = (i + j) + f - 0.5;
+}
+end

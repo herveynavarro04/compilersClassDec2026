@@ -1,0 +1,7 @@
+program bad_div;
+var a, b : int;
+main {
+  a = 6;
+  b = a / 2;
+}
+end
