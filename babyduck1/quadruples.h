@@ -6,9 +6,9 @@
 /*Quadruple structure*/
 struct Quadruple {
     Op oper;
-    std::string left_op;
-    std::string right_op;
-    std::string result;
+    int left_op;
+    int right_op;
+    int result;
 };
 
 /*Needed neuralgic points to generate quadruples*/

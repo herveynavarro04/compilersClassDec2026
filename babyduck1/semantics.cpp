@@ -1,3 +1,4 @@
+#include "memory/memory.h"
 #include "semantics.h"
 #include <cstdio>
 #include <cstdlib>
@@ -25,22 +26,23 @@ static void add_to_current_vartable(const std::string &name) {
     if (table.count(name)){
         semantic_error("multiple declaration of '" + name + "' in '" + current_func + "'");
     }
-    table[name] = {current_type};
+    Segment seg = (current_func == program_name) ? GLOBAL : LOCAL;
+    table[name] = {current_type, alloc_address(seg, current_type)};
 }
 
-Type var_type(const char *name) {
+VarInfo var_type(const char *name) {
     FuncInfo &f = (*dir)[current_func];
     if (f.vars) {
         auto curr_var = f.vars->find(name);
         if (curr_var != f.vars->end()) {
-            return curr_var->second.type;
+            return curr_var->second;
         }
     }
     FuncInfo &global = (*dir)[program_name];
     if (global.vars) {
         auto curr_var = global.vars->find(name);
         if (curr_var != global.vars->end()) {
-            return curr_var->second.type;
+            return curr_var->second;
         }
     }
     semantic_error("variable '" + std::string(name) + "' not declared");
@@ -103,6 +105,7 @@ void np9_add_function(const char *name) {
 }
 
 void np10_create_function_vartable() {
+    reset_local_memory();
     (*dir)[current_func].vars = std::make_unique<VarTable>();
 }
 
@@ -114,6 +117,7 @@ void np11_add_param(const char *name) {
 void np12_delete_function_vartable() {
     FuncInfo &f = (*dir)[current_func];
     f.vars.reset();
+    reset_local_memory();
     current_func = program_name;
 }
 

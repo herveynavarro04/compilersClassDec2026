@@ -6,7 +6,8 @@ enum Type {
     FLOAT_T = 1,
     BOOL_T = 2,
     ERROR_T = 3,
-    VOID_T = 4        
+    VOID_T = 4,       
+    STRING_T = 6 
 };
 
 enum Op {

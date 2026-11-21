@@ -8,6 +8,7 @@
 /*Variable table*/
 struct VarInfo {
     Type type;
+    int address;
 };
 using VarTable = std::unordered_map<std::string, VarInfo>;
 
@@ -36,7 +37,7 @@ void np12_delete_function_vartable();
 void np13_check_var_declared(const char *name);
 
 /*Look for variable current type*/
-Type var_type(const char *name);
+VarInfo var_type(const char *name);
 
 /*error logs*/
 [[noreturn]] void semantic_error(const std::string &msg);
