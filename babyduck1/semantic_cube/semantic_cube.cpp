@@ -28,6 +28,7 @@ const char *type_name(Type t) {
     case FLOAT_T: return "float";
     case BOOL_T: return "bool";
     case VOID_T: return "void";
+    case STRING_T: return "string";
     default: return "error";
  }
 }
@@ -45,6 +46,8 @@ const char *op_symbol(Op op) {
        case FAKE_BOTTOM: return "(";
        case OP_PRINT: return "print";
        case OP_READ: return "read";
+       case GOTO: return "goto";
+       case GOTOF: return "gotof";
        default:     return "?";
    }
 }

@@ -7,7 +7,7 @@ enum Type {
     BOOL_T = 2,
     ERROR_T = 3,
     VOID_T = 4,       
-    STRING_T = 6 
+    STRING_T = 5 
 };
 
 enum Op {
@@ -21,7 +21,9 @@ enum Op {
     ASSIGN = 7,
     FAKE_BOTTOM = 8,
     OP_PRINT = 9,
-    OP_READ = 10
+    OP_READ = 10,
+    GOTO = 11,
+    GOTOF = 12
 };
 
 // Returns the result type of (left op right), or ERROR_T if not allowed.

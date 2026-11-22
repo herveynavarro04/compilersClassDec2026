@@ -5,10 +5,14 @@
 #include <vector>
 #include <cstdio>
 
-static std::stack<int> stack_operands;      
+static std::stack<int> stack_operands; 
+static std::stack<int> stack_jumps;           
 static std::stack<Type> stack_types;
 static std::stack<Op> stack_operators;
 static std::vector<Quadruple> quadruples;
+
+static int next_quad();
+
 
 static const int EMPTY = -1;                
 
