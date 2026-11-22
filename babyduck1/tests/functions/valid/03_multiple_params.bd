@@ -1,0 +1,14 @@
+program params;
+var avg : float;
+float average(a : int, b : float) [
+  var s : float;
+  {
+    s = (a + b) / 2;
+    return s;
+  }
+];
+main {
+  avg = average(4, 5);
+  print(avg);
+}
+end

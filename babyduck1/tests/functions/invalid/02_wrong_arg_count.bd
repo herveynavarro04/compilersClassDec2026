@@ -1,0 +1,9 @@
+program argcount;
+var r : int;
+int add(a : int, b : int) [
+  { return a + b; }
+];
+main {
+  r = add(1);
+}
+end

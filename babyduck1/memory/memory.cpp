@@ -81,3 +81,7 @@ void print_constants() {
         std::printf("%-8d %s\n", entry.first, entry.second.c_str());
     }
 }
+
+int segment_count(Segment seg, Type type) {
+    return seg_counter[seg][type];
+}

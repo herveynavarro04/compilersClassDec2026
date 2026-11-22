@@ -100,7 +100,11 @@ void np9_add_function(const char *name) {
     if (global.vars && global.vars->count(name)) {
         semantic_error("'" + std::string(name) + "' is already a global variable");
     }
-    (*dir)[name].returnType = current_type;
+    FuncInfo &f = (*dir)[name];
+    f.returnType = current_type;
+    if (current_type != VOID_T) {
+        f.return_address = alloc_address(GLOBAL, current_type);
+    }
     current_func = name;
 }
 
@@ -121,11 +125,22 @@ void np12_delete_function_vartable() {
     current_func = program_name;
 }
 
-void np13_check_var_declared(const char *name) {
-    const VarTable *local = (*dir)[current_func].vars.get();
-    const VarTable *global = (*dir)[program_name].vars.get();
-    if ((local && local->count(name)) || (global && global->count(name))) {
-        return;
+FuncInfo &find_function(const char *name) {
+    auto f = dir->find(name);
+    if (f == dir->end() || name == program_name) {
+        semantic_error("function '" + std::string(name) + "' not declared");
     }
-    semantic_error("undeclared variable '" + std::string(name) + "'");
+    return f->second;
+}
+
+FuncInfo &current_function() {
+    return (*dir)[current_func];
+}
+
+const std::string &current_function_name() {
+    return current_func;
+}
+
+bool in_main_scope() {
+    return current_func == program_name;
 }

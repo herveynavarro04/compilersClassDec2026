@@ -1,0 +1,11 @@
+program voidcall;
+var total : int;
+void show(n : int) [
+  { print("n = ", n); }
+];
+main {
+  total = 3;
+  show(total);
+  show(total + 1);
+}
+end

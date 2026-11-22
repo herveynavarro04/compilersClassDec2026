@@ -1,0 +1,8 @@
+program argtype;
+void show(n : int) [
+  { print(n); }
+];
+main {
+  show(2.5);
+}
+end

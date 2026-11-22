@@ -23,7 +23,12 @@ enum Op {
     OP_PRINT = 9,
     OP_READ = 10,
     GOTO = 11,
-    GOTOF = 12
+    GOTOF = 12,
+    ERA = 13,
+    PARAM = 14,
+    GOSUB = 15,
+    ENDFUNC = 16,
+    OP_RETURN = 17
 };
 
 // Returns the result type of (left op right), or ERROR_T if not allowed.

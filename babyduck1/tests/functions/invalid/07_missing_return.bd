@@ -1,0 +1,8 @@
+program noreturn;
+int one() [
+  { print("no return"); }
+];
+main {
+  print(one());
+}
+end

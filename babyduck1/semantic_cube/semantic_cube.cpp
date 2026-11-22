@@ -48,7 +48,11 @@ const char *op_symbol(Op op) {
        case OP_READ: return "read";
        case GOTO: return "goto";
        case GOTOF: return "gotof";
+       case ERA: return "era";
+       case PARAM: return "param";
+       case GOSUB: return "gosub";
+       case ENDFUNC: return "endfunc";
+       case OP_RETURN: return "return";
        default:     return "?";
    }
 }
-

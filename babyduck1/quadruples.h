@@ -36,5 +36,26 @@ void npj4_while_start();
 void npj5_while_condition();
 void npj6_while_end();
 
+/*Neuralgic points for the program entry (jump to main)*/
+void npm1_goto_main();
+void npm2_fill_main();
+
+/*Neuralgic points for function declaration*/
+void npf4_count_params();
+void npf5_count_locals();
+void npf6_set_start();
+void npf7_end_function();
+void npr1_return();
+
+/*Neuralgic points for function calls*/
+void npc1_verify_function(const char *name);
+void npc2_era();
+void npc3_param();
+void npc4_next_param();
+void npc5_check_args();
+void npc6_gosub();
+void npc7_return_value();
+
 /*Quadruple print*/
 void print_quadruples();
+void print_functions();

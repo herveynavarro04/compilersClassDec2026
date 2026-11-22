@@ -1,0 +1,6 @@
+program undeclared;
+var r : int;
+main {
+  r = missing(1);
+}
+end

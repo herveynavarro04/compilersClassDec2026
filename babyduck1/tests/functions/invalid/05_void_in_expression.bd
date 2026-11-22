@@ -1,0 +1,9 @@
+program voidexpr;
+var r : int;
+void show(n : int) [
+  { print(n); }
+];
+main {
+  r = show(1) + 1;
+}
+end

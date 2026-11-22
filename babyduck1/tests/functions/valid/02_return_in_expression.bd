@@ -1,0 +1,10 @@
+program retexpr;
+var r : int;
+int double(x : int) [
+  { return x * 2; }
+];
+main {
+  r = double(3) + 1;
+  print(r, double(r));
+}
+end

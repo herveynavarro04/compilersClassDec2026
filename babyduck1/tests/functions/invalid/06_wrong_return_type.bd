@@ -1,0 +1,8 @@
+program rettype;
+int half(x : int) [
+  { return x / 2; }
+];
+main {
+  print(half(4));
+}
+end

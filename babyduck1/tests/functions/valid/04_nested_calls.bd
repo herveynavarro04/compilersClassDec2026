@@ -1,0 +1,13 @@
+program nested;
+var r : int;
+int inc(x : int) [
+  { return x + 1; }
+];
+int add(a : int, b : int) [
+  { return a + b; }
+];
+main {
+  r = add(inc(1), inc(inc(2)));
+  print(r);
+}
+end

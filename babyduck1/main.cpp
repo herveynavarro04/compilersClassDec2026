@@ -27,6 +27,8 @@ int main(int argc, char **argv) {
         if (show_quads) {
             print_quadruples();
             std::printf("\n");
+            print_functions();
+            std::printf("\n");
             print_constants();
         }
         return 0;

@@ -4,12 +4,32 @@
 #include <stack>
 #include <vector>
 #include <cstdio>
+#include <string>
 
 static std::stack<int> stack_operands;
 static std::stack<int> stack_jumps;
 static std::stack<Type> stack_types;
 static std::stack<Op> stack_operators;
 static std::vector<Quadruple> quadruples;
+
+struct PendingCall {
+    std::string name;
+    size_t k;
+    size_t count;
+};
+static std::stack<PendingCall> stack_calls;
+static std::string last_called;
+static int main_jump = -1;
+
+struct FuncRecord {
+    std::string name;
+    int start_quad;
+    int num_params;
+    int local_vars[2];
+    int temp_vars[3];
+    int return_address;
+};
+static std::vector<FuncRecord> functions;
 
 static const int EMPTY = -1;
 
@@ -57,13 +77,14 @@ static void gen_quadruple() {
 }
 
 void print_quadruples() {
-    std::printf("%3s  %-6s %-8s %-8s %-8s\n", "#", "op", "left", "right", "result");
+    std::printf("%3s  %-8s %-8s %-8s %-8s\n", "#", "op", "left", "right", "result");
     for (size_t i = 0; i < quadruples.size(); ++i) {
         const Quadruple &q = quadruples[i];
-        std::printf("%3zu  %-6s ", i + 1, op_symbol(q.oper));
+        std::printf("%3zu  %-8s ", i + 1, op_symbol(q.oper));
         print_field(q.left_op);
         print_field(q.right_op);
-        if ((q.oper == GOTO || q.oper == GOTOF) && q.result != EMPTY) {
+        bool quad_target = q.oper == GOTO || q.oper == GOTOF || q.oper == ERA || q.oper == GOSUB;
+        if (quad_target && q.result != EMPTY) {
             std::printf("%-8d ", q.result + 1);
         } else {
             print_field(q.result);
@@ -249,4 +270,146 @@ void npj6_while_end() {
 
     quadruples.push_back(Quadruple{ GOTO, EMPTY, EMPTY, ret });
     fill(end, next_quad());
+}
+
+void print_functions() {
+    std::printf("%-10s %-6s %-7s %-12s %-18s %s\n",
+                "function", "start", "params", "locals(i,f)", "temps(i,f,b)", "return");
+    for (const FuncRecord &f : functions) {
+        std::printf("%-10s %-6d %-7d %d,%-10d %d,%d,%-14d ",
+                    f.name.c_str(), f.start_quad + 1, f.num_params,
+                    f.local_vars[0], f.local_vars[1],
+                    f.temp_vars[0], f.temp_vars[1], f.temp_vars[2]);
+        print_field(f.return_address);
+        std::printf("\n");
+    }
+}
+
+void npm1_goto_main() {
+    quadruples.push_back(Quadruple{ GOTO, EMPTY, EMPTY, EMPTY });
+    main_jump = next_quad() - 1;
+}
+
+void npm2_fill_main() {
+    fill(main_jump, next_quad());
+}
+
+void npf4_count_params() {
+    FuncInfo &f = current_function();
+    f.num_params = static_cast<int>(f.params.size());
+}
+
+void npf5_count_locals() {
+    FuncInfo &f = current_function();
+    f.local_vars[0] = segment_count(LOCAL, INT_T);
+    f.local_vars[1] = segment_count(LOCAL, FLOAT_T);
+}
+
+void npf6_set_start() {
+    current_function().start_quad = next_quad();
+}
+
+void npf7_end_function() {
+    FuncInfo &f = current_function();
+    if (f.returnType != VOID_T && !f.has_return) {
+        semantic_error("function '" + current_function_name() + "' must return a value");
+    }
+    f.temp_vars[0] = segment_count(TEMP, INT_T);
+    f.temp_vars[1] = segment_count(TEMP, FLOAT_T);
+    f.temp_vars[2] = segment_count(TEMP, BOOL_T);
+    quadruples.push_back(Quadruple{ ENDFUNC, EMPTY, EMPTY, EMPTY });
+
+    functions.push_back(FuncRecord{
+        current_function_name(), f.start_quad, f.num_params,
+        { f.local_vars[0], f.local_vars[1] },
+        { f.temp_vars[0], f.temp_vars[1], f.temp_vars[2] },
+        f.return_address });
+}
+
+void npr1_return() {
+    int value = stack_operands.top();
+    stack_operands.pop();
+    Type value_type = stack_types.top();
+    stack_types.pop();
+
+    if (in_main_scope()) {
+        semantic_error("return outside of a function");
+    }
+    FuncInfo &f = current_function();
+    if (f.returnType == VOID_T) {
+        semantic_error("void function '" + current_function_name() + "' cannot return a value");
+    }
+    if (check_types(f.returnType, ASSIGN, value_type) == ERROR_T) {
+        semantic_error(std::string("type mismatch: function '") + current_function_name()
+                       + "' returns " + type_name(f.returnType) + ", got " + type_name(value_type));
+    }
+    f.has_return = true;
+    quadruples.push_back(Quadruple{ OP_RETURN, value, EMPTY, f.return_address });
+}
+
+void npc1_verify_function(const char *name) {
+    find_function(name);
+    stack_calls.push(PendingCall{ name, 1, 0 });
+}
+
+void npc2_era() {
+    FuncInfo &f = find_function(stack_calls.top().name.c_str());
+    quadruples.push_back(Quadruple{ ERA, EMPTY, EMPTY, f.start_quad });
+    stack_operators.push(FAKE_BOTTOM);
+}
+
+void npc3_param() {
+    int arg = stack_operands.top();
+    stack_operands.pop();
+    Type arg_type = stack_types.top();
+    stack_types.pop();
+
+    PendingCall &call = stack_calls.top();
+    FuncInfo &f = find_function(call.name.c_str());
+    if (call.k > f.params.size()) {
+        semantic_error("too many arguments in call to '" + call.name + "'");
+    }
+    Type param_type = f.params[call.k - 1];
+    if (check_types(param_type, ASSIGN, arg_type) == ERROR_T) {
+        semantic_error("type mismatch: argument " + std::to_string(call.k) + " of '" + call.name
+                       + "' expects " + type_name(param_type) + ", got " + type_name(arg_type));
+    }
+    quadruples.push_back(Quadruple{ PARAM, arg, EMPTY, static_cast<int>(call.k) });
+    call.count++;
+}
+
+void npc4_next_param() {
+    stack_calls.top().k++;
+}
+
+void npc5_check_args() {
+    PendingCall &call = stack_calls.top();
+    FuncInfo &f = find_function(call.name.c_str());
+    if (call.count != f.params.size()) {
+        semantic_error("wrong number of arguments in call to '" + call.name + "': expected "
+                       + std::to_string(f.params.size()) + ", got " + std::to_string(call.count));
+    }
+    if (stack_operators.empty() || stack_operators.top() != FAKE_BOTTOM) {
+        internal_error("npc5 expected the fake bottom of the call");
+    }
+    stack_operators.pop();
+}
+
+void npc6_gosub() {
+    PendingCall call = stack_calls.top();
+    stack_calls.pop();
+    FuncInfo &f = find_function(call.name.c_str());
+    quadruples.push_back(Quadruple{ GOSUB, EMPTY, EMPTY, f.start_quad });
+    last_called = call.name;
+}
+
+void npc7_return_value() {
+    FuncInfo &f = find_function(last_called.c_str());
+    if (f.returnType == VOID_T) {
+        semantic_error("void function '" + last_called + "' cannot be used in an expression");
+    }
+    int temp = new_temp(f.returnType);
+    quadruples.push_back(Quadruple{ ASSIGN, f.return_address, EMPTY, temp });
+    stack_operands.push(temp);
+    stack_types.push(f.returnType);
 }

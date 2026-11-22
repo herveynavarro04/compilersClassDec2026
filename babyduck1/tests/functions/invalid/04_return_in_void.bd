@@ -1,0 +1,8 @@
+program retvoid;
+void show(n : int) [
+  { return n; }
+];
+main {
+  show(1);
+}
+end

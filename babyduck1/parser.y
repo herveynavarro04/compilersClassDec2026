@@ -41,7 +41,10 @@ extern int yylineno;
 program
     : PROGRAM                   { np1_create_dirfunc(); }            /* 1 */
       ID                        { np2_add_program($3); }             /* 2 */
-      ';' dec_vars dec_funcs MAIN body
+      ';'                       { npm1_goto_main(); }                /* M1 */
+      dec_vars dec_funcs
+      MAIN                      { npm2_fill_main(); }                /* M2 */
+      body
       END                       { np6_delete_dirfunc(); }            /* 6 */
     ;
 
@@ -96,8 +99,11 @@ func
       func_type
       ID                        { np9_add_function($3); }            /* 9 */
       '('                       { np10_create_function_vartable(); } /* 10 */
-      params ')' '[' dec_vars body ']' ';'
-                                { np12_delete_function_vartable(); } /* 12 */
+      params ')'                { npf4_count_params(); }             /* F4 */
+      '[' dec_vars              { npf5_count_locals();               /* F5 */
+                                  npf6_set_start(); }                /* F6 */
+      body ']' ';'              { npf7_end_function();               /* F7 */
+                                  np12_delete_function_vartable(); } /* 12 */
     ;
 
 /* <FuncType> -> void | <TYPE> */
@@ -193,7 +199,7 @@ read
 
 /* <Return> -> return <EXPRESSION> ; */
 return_stmt
-    : RETURN expression ';'
+    : RETURN expression ';'     { npr1_return(); }                   /* R1 */
     ;
 
 /* ---------- Expressions (one level per precedence) ---------- */
@@ -235,7 +241,7 @@ factor
     | '+' factor_value
     | '-' factor_value          { npq11_unary_minus(); }             /* Q11 */
     | factor_value
-    | f_call
+    | f_call                    { npc7_return_value(); }             /* C7 */
     ;
 
 /* <FactorValue> -> id | <CTE> */
@@ -254,8 +260,11 @@ cte
 
 /* <F_Call> -> id ( <Args> ) */
 f_call
-    : ID                       
-      '(' args ')'
+    : ID                        { npc1_verify_function($1); }        /* C1 */
+      '('                       { npc2_era(); }                      /* C2 */
+      args
+      ')'                       { npc5_check_args();                 /* C5 */
+                                  npc6_gosub(); }                    /* C6 */
     ;
 
 /* <Args> -> <ArgList> | ε */
@@ -266,8 +275,9 @@ args
 
 /* <ArgList> -> <EXPRESSION> <MoreArgs> */
 arg_list
-    : arg_list ',' expression
-    | expression
+    : arg_list ','              { npc4_next_param(); }               /* C4 */
+      expression                { npc3_param(); }                    /* C3 */
+    | expression                { npc3_param(); }                    /* C3 */
     ;
 
 %%
