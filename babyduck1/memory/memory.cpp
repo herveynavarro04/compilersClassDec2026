@@ -2,6 +2,8 @@
 #include "semantic_cube/semantic_cube.h"
 #include "semantics.h"
 #include <unordered_map>
+#include <map>
+#include <cstdio>
 
 const int SEGMENT_SIZE = 1000;
 
@@ -67,4 +69,15 @@ Type type_of_address(int addr) {
         }
     }
     return ERROR_T;
+}
+
+void print_constants() {
+    std::map<int, std::string> by_address;
+    for (const auto &entry : constant_table) {
+        by_address[entry.second] = entry.first;
+    }
+    std::printf("%-8s %s\n", "address", "value");
+    for (const auto &entry : by_address) {
+        std::printf("%-8d %s\n", entry.first, entry.second.c_str());
+    }
 }

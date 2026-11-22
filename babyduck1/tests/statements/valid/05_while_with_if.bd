@@ -1,0 +1,14 @@
+program whileif;
+var i, evens : int;
+main {
+  i = 0;
+  evens = 0;
+  while (i < 10) do {
+    if (i != 5) {
+      evens = evens + 1;
+    };
+    i = i + 1;
+  };
+  print(evens);
+}
+end

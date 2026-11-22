@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstring>
 #include "quadruples.h"
+#include "memory/memory.h"
 
 /* ---------- Symbols defined by Flex and Bison ---------- */
 extern FILE *yyin;       // input file the scanner reads from (Flex)
@@ -23,7 +24,11 @@ int main(int argc, char **argv) {
 
     if (yyparse() == 0) {
         std::printf("ACCEPTED: the program is valid\n");
-        if (show_quads) print_quadruples();
+        if (show_quads) {
+            print_quadruples();
+            std::printf("\n");
+            print_constants();
+        }
         return 0;
     }
     return 1;

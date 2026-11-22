@@ -1,0 +1,9 @@
+program whilenotbool;
+var x : float;
+main {
+  x = 1.5;
+  while (x) do {
+    x = x - 1;
+  };
+}
+end

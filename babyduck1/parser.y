@@ -151,18 +151,22 @@ assign
 
 /* <CONDITION> -> if ( <EXPRESSION> ) <Body> <ElsePart> ; */
 condition
-    : IF '(' expression ')' body else_part ';'
+    : IF '(' expression ')'     { npj1_if_condition(); }             /* J1 */
+      body else_part ';'        { npj2_if_end(); }                   /* J2 */
     ;
 
 /* <ElsePart> -> else <Body> | ε */
 else_part
-    : ELSE body
+    : ELSE                      { npj3_else(); }                     /* J3 */
+      body
     | %empty
     ;
 
 /* <CYCLE> -> while ( <EXPRESSION> ) do <Body> ; */
 cycle
-    : WHILE '(' expression ')' DO body ';'
+    : WHILE                     { npj4_while_start(); }              /* J4 */
+      '(' expression ')'        { npj5_while_condition(); }          /* J5 */
+      DO body ';'               { npj6_while_end(); }                /* J6 */
     ;
 
 /* <Print> -> print ( <PrintList> ) ; */

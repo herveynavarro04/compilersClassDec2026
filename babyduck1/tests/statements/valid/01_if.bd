@@ -1,0 +1,11 @@
+program ifonly;
+var a, b : int;
+main {
+  a = 1;
+  b = 2;
+  if (a < b) {
+    print("a is smaller");
+  };
+  print("done");
+}
+end

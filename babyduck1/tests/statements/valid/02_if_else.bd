@@ -1,0 +1,13 @@
+program ifelse;
+var a, b, c : int;
+main {
+  a = 5;
+  b = 3;
+  if (a > b) {
+    c = a - b;
+  } else {
+    c = b - a;
+  };
+  print(c);
+}
+end

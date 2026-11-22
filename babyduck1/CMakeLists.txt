@@ -45,9 +45,9 @@ target_compile_options(babyduck PRIVATE -Wall)
 # ---------- Test plan (run with: ctest --output-on-failure) ----------
 enable_testing()
 
-# Tests are organized by compiler phase: syntax, semantics, quadruples.
+# Tests are organized by compiler phase: syntax, semantics, quadruples, statements.
 # Each phase has a valid/ folder (exit code 0) and an invalid/ folder (exit != 0).
-foreach(phase syntax semantics quadruples)
+foreach(phase syntax semantics quadruples statements)
     file(GLOB PHASE_VALID ${CMAKE_CURRENT_SOURCE_DIR}/tests/${phase}/valid/*.bd)
     foreach(f ${PHASE_VALID})
         get_filename_component(name ${f} NAME_WE)

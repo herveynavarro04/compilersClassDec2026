@@ -28,6 +28,13 @@ void npq13_print_expression();
 void npq14_print_string(const char *text);
 void npq15_read(const char *name);
 
+/*Neuralgic points for conditional and loop statements*/
+void npj1_if_condition();
+void npj2_if_end();
+void npj3_else();
+void npj4_while_start();
+void npj5_while_condition();
+void npj6_while_end();
+
 /*Quadruple print*/
 void print_quadruples();
-

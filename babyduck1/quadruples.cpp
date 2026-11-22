@@ -5,16 +5,21 @@
 #include <vector>
 #include <cstdio>
 
-static std::stack<int> stack_operands; 
-static std::stack<int> stack_jumps;           
+static std::stack<int> stack_operands;
+static std::stack<int> stack_jumps;
 static std::stack<Type> stack_types;
 static std::stack<Op> stack_operators;
 static std::vector<Quadruple> quadruples;
 
-static int next_quad();
+static const int EMPTY = -1;
 
+static int next_quad() {
+    return static_cast<int>(quadruples.size());
+}
 
-static const int EMPTY = -1;                
+static void fill(int quad, int target) {
+    quadruples[quad].result = target;
+}
 
 static int new_temp(Type type) {
     return alloc_address(TEMP, type);
@@ -58,7 +63,11 @@ void print_quadruples() {
         std::printf("%3zu  %-6s ", i + 1, op_symbol(q.oper));
         print_field(q.left_op);
         print_field(q.right_op);
-        print_field(q.result);
+        if ((q.oper == GOTO || q.oper == GOTOF) && q.result != EMPTY) {
+            std::printf("%-8d ", q.result + 1);
+        } else {
+            print_field(q.result);
+        }
         std::printf("\n");
     }
 }
@@ -191,4 +200,53 @@ void npq14_print_string(const char *text) {
 void npq15_read(const char *name) {
     VarInfo var = var_type(name);
     quadruples.push_back(Quadruple{ OP_READ, EMPTY, EMPTY, var.address });
+}
+
+static void gen_gotof() {
+    Type type = stack_types.top();
+    stack_types.pop();
+    if (type != BOOL_T) {
+        semantic_error(std::string("type mismatch: condition must be bool, got ") + type_name(type));
+    }
+    int result = stack_operands.top();
+    stack_operands.pop();
+
+    quadruples.push_back(Quadruple{ GOTOF, result, EMPTY, EMPTY });
+    stack_jumps.push(next_quad() - 1);
+}
+
+void npj1_if_condition() {
+    gen_gotof();
+}
+
+void npj2_if_end() {
+    int end = stack_jumps.top();
+    stack_jumps.pop();
+    fill(end, next_quad());
+}
+
+void npj3_else() {
+    quadruples.push_back(Quadruple{ GOTO, EMPTY, EMPTY, EMPTY });
+    int false_jump = stack_jumps.top();
+    stack_jumps.pop();
+    stack_jumps.push(next_quad() - 1);
+    fill(false_jump, next_quad());
+}
+
+void npj4_while_start() {
+    stack_jumps.push(next_quad());
+}
+
+void npj5_while_condition() {
+    gen_gotof();
+}
+
+void npj6_while_end() {
+    int end = stack_jumps.top();
+    stack_jumps.pop();
+    int ret = stack_jumps.top();
+    stack_jumps.pop();
+
+    quadruples.push_back(Quadruple{ GOTO, EMPTY, EMPTY, ret });
+    fill(end, next_quad());
 }
