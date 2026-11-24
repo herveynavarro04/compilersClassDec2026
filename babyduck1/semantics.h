@@ -23,7 +23,9 @@ struct FuncInfo {
     int temp_vars[3] = {};
     int return_address = -1;
     bool has_return = false;
+    std::vector<int> param_addresses;
 };
+
 using FuncDirectory = std::unordered_map<std::string, FuncInfo>;
 
 /*Neuralgic point actions*/

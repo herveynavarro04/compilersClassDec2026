@@ -53,6 +53,8 @@ const char *op_symbol(Op op) {
        case GOSUB: return "gosub";
        case ENDFUNC: return "endfunc";
        case OP_RETURN: return "return";
+       case OP_PRINTLN: return "println";
+       case OP_END: return "end";
        default:     return "?";
    }
 }

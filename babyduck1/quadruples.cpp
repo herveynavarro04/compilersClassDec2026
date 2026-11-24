@@ -11,7 +11,6 @@ static std::stack<int> stack_jumps;
 static std::stack<Type> stack_types;
 static std::stack<Op> stack_operators;
 static std::vector<Quadruple> quadruples;
-
 struct PendingCall {
     std::string name;
     size_t k;
@@ -21,15 +20,8 @@ static std::stack<PendingCall> stack_calls;
 static std::string last_called;
 static int main_jump = -1;
 
-struct FuncRecord {
-    std::string name;
-    int start_quad;
-    int num_params;
-    int local_vars[2];
-    int temp_vars[3];
-    int return_address;
-};
 static std::vector<FuncRecord> functions;
+static FuncRecord main_record;
 
 static const int EMPTY = -1;
 
@@ -223,6 +215,10 @@ void npq15_read(const char *name) {
     quadruples.push_back(Quadruple{ OP_READ, EMPTY, EMPTY, var.address });
 }
 
+void npq16_print_end() {
+    quadruples.push_back(Quadruple { OP_PRINTLN, -1, -1, -1 });
+}
+
 static void gen_gotof() {
     Type type = stack_types.top();
     stack_types.pop();
@@ -272,17 +268,26 @@ void npj6_while_end() {
     fill(end, next_quad());
 }
 
-void print_functions() {
-    std::printf("%-10s %-6s %-7s %-12s %-18s %s\n",
-                "function", "start", "params", "locals(i,f)", "temps(i,f,b)", "return");
-    for (const FuncRecord &f : functions) {
-        std::printf("%-10s %-6d %-7d %d,%-10d %d,%d,%-14d ",
-                    f.name.c_str(), f.start_quad + 1, f.num_params,
-                    f.local_vars[0], f.local_vars[1],
-                    f.temp_vars[0], f.temp_vars[1], f.temp_vars[2]);
-        print_field(f.return_address);
-        std::printf("\n");
+static void print_record(const FuncRecord &f) {
+    std::printf("%-10s %-6d %-7d %d,%-10d %d,%d,%-14d ",
+                f.name.c_str(), f.start_quad + 1, f.num_params,
+                f.local_vars[0], f.local_vars[1],
+                f.temp_vars[0], f.temp_vars[1], f.temp_vars[2]);
+    print_field(f.return_address);
+    for (int addr : f.param_addresses) {
+        std::printf("%d ", addr);
     }
+    std::printf("\n");
+}
+
+void print_functions() {
+    std::printf("%-10s %-6s %-7s %-12s %-18s %-8s %s\n",
+                "function", "start", "params", "locals(i,f)", "temps(i,f,b)",
+                "return", "param addr");
+    for (const FuncRecord &f : functions) {
+        print_record(f);
+    }
+    print_record(main_record);
 }
 
 void npm1_goto_main() {
@@ -292,6 +297,21 @@ void npm1_goto_main() {
 
 void npm2_fill_main() {
     fill(main_jump, next_quad());
+}
+
+void npm3_end_program() {
+    main_record.name = "main";
+    main_record.start_quad = quadruples[main_jump].result;
+    main_record.num_params = 0;
+    main_record.local_vars[0] = 0;
+    main_record.local_vars[1] = 0;
+    main_record.temp_vars[0] = segment_count(TEMP, INT_T);
+    main_record.temp_vars[1] = segment_count(TEMP, FLOAT_T);
+    main_record.temp_vars[2] = segment_count(TEMP, BOOL_T);
+    main_record.return_address = EMPTY;
+    int global_ints = segment_count(GLOBAL, INT_T);
+    int global_floats = segment_count(GLOBAL, FLOAT_T);
+    quadruples.push_back(Quadruple{ OP_END, EMPTY, EMPTY, EMPTY });
 }
 
 void npf4_count_params() {
@@ -323,7 +343,7 @@ void npf7_end_function() {
         current_function_name(), f.start_quad, f.num_params,
         { f.local_vars[0], f.local_vars[1] },
         { f.temp_vars[0], f.temp_vars[1], f.temp_vars[2] },
-        f.return_address });
+        f.return_address, f.param_addresses });
 }
 
 void npr1_return() {

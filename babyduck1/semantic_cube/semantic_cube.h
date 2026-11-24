@@ -28,7 +28,10 @@ enum Op {
     PARAM = 14,
     GOSUB = 15,
     ENDFUNC = 16,
-    OP_RETURN = 17
+    OP_RETURN = 17,
+    OP_PRINTLN = 18,
+    OP_END = 19,
+
 };
 
 // Returns the result type of (left op right), or ERROR_T if not allowed.

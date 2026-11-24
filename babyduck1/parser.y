@@ -45,7 +45,7 @@ program
       dec_vars dec_funcs
       MAIN                      { npm2_fill_main(); }                /* M2 */
       body
-      END                       { np6_delete_dirfunc(); }            /* 6 */
+      END                       { npm3_end_program(); np6_delete_dirfunc(); }            /* npm 3 & np6 */
     ;
 
 /* ---------- Variable declarations ---------- */
@@ -177,7 +177,7 @@ cycle
 
 /* <Print> -> print ( <PrintList> ) ; */
 print
-    : PRINT '(' print_list ')' ';'
+    : PRINT '(' print_list ')' ';' { npq1_print_end(); }             /* Q16 */
     ;
 
 /* <PrintList> -> <PrintItem> <MorePrint> */

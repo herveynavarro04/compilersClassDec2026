@@ -115,7 +115,9 @@ void np10_create_function_vartable() {
 
 void np11_add_param(const char *name) {
     add_to_current_vartable(name);
-    (*dir)[current_func].params.push_back(current_type);
+    FuncInfo &f = (*dir)[current_func];
+    f.params.push_back(current_type);     
+    f.param_addresses.push_back((*f.vars)[name].address);
 }
 
 void np12_delete_function_vartable() {

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "semantic_cube/semantic_cube.h"
 
 
@@ -10,6 +11,20 @@ struct Quadruple {
     int right_op;
     int result;
 };
+
+struct FuncRecord {
+    std::string name;
+    int start_quad;
+    int num_params;
+    int local_vars[2];
+    int temp_vars[3];
+    int return_address;
+    std::vector<int> param_addresses;
+};
+
+const std::vector<Quadruple> &get_quadruples();
+const std::vector<Quadruple> &get_functions();
+const std::vector<Quadruple> &get_main_record();
 
 /*Needed neuralgic points to generate quadruples*/
 void npq1_push_operand(const char *name);
@@ -27,6 +42,7 @@ void npq12_assign(const char *name);
 void npq13_print_expression();
 void npq14_print_string(const char *text);
 void npq15_read(const char *name);
+void npq16_print_end();
 
 /*Neuralgic points for conditional and loop statements*/
 void npj1_if_condition();
@@ -59,3 +75,6 @@ void npc7_return_value();
 /*Quadruple print*/
 void print_quadruples();
 void print_functions();
+
+/*Global count*/
+int get_global_count(Type type);

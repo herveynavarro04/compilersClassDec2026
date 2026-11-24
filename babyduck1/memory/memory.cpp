@@ -85,3 +85,21 @@ void print_constants() {
 int segment_count(Segment seg, Type type) {
     return seg_counter[seg][type];
 }
+
+bool decode_address(int addr, DecodedAddress &out) {
+    for (int s = 0; s < 4; s++) {
+        for (int t = 0; t < 6; t++) {
+            int start = base[s][t];
+            if (start != -1 && addr >= start && addr < start + SEGMENT_SIZE) {
+                out = DecodedAddress{ static_cast<Segment>(s), static_cast<Type>(t), addr - start };
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+Type type_of_address(int addr) {
+    DecodedAddress d;
+    return decode_address(addr, d) ? d.type : ERROR_T;
+}

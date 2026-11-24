@@ -1,6 +1,7 @@
 #pragma once 
 #include <string>
 #include "semantic_cube.h"
+#include <unordered_map>
 
 enum Segment {
     GLOBAL = 0,
@@ -9,9 +10,18 @@ enum Segment {
     CONST = 3
 };
 
+struct DecodedAddress {
+    Segment seg;
+    Type type;
+    int offset;
+};
+
+bool decode_address(int addr, DecodedAddress &out);
+
 int alloc_address(Segment seg, Type type);
 void reset_local_memory();
 int get_constant_address(const std::string &value, Type type);
 Type type_of_address(int addr);
 int segment_count(Segment seg, Type type);
 void print_constants();
+const std::unordered_map<std::string, int> &get_constants();
