@@ -177,7 +177,7 @@ cycle
 
 /* <Print> -> print ( <PrintList> ) ; */
 print
-    : PRINT '(' print_list ')' ';' { npq1_print_end(); }             /* Q16 */
+    : PRINT '(' print_list ')' ';' { npq16_print_end(); }             /* Q16 */
     ;
 
 /* <PrintList> -> <PrintItem> <MorePrint> */

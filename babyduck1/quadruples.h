@@ -51,6 +51,7 @@ void npj6_while_end();
 /*Neuralgic points for the program entry (jump to main)*/
 void npm1_goto_main();
 void npm2_fill_main();
+void npm3_end_program();
 
 /*Neuralgic points for function declaration*/
 void npf4_count_params();
