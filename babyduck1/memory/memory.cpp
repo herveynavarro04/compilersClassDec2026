@@ -85,15 +85,3 @@ void print_constants() {
 int segment_count(Segment seg, Type type) {
     return seg_counter[seg][type];
 }
-
-Type type_of_address(int addr) {
-    for (int s = 0; s < 4; s++) {
-        for (int t = 0; t < 6; t++) {
-            int start = base[s][t];
-            if (start != -1 && addr >= start && addr < start + SEGMENT_SIZE) {
-                return static_cast<Type>(t);
-            }
-        }
-    }
-    return ERROR_T;
-}

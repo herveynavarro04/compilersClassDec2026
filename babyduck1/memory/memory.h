@@ -16,4 +16,3 @@ int get_constant_address(const std::string &value, Type type);
 Type type_of_address(int addr);
 int segment_count(Segment seg, Type type);
 void print_constants();
-const std::unordered_map<std::string, int> &get_constants();

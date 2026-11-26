@@ -309,8 +309,6 @@ void npm3_end_program() {
     main_record.temp_vars[1] = segment_count(TEMP, FLOAT_T);
     main_record.temp_vars[2] = segment_count(TEMP, BOOL_T);
     main_record.return_address = EMPTY;
-    int global_ints = segment_count(GLOBAL, INT_T);
-    int global_floats = segment_count(GLOBAL, FLOAT_T);
     quadruples.push_back(Quadruple{ OP_END, EMPTY, EMPTY, EMPTY });
 }
 

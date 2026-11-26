@@ -22,10 +22,6 @@ struct FuncRecord {
     std::vector<int> param_addresses;
 };
 
-const std::vector<Quadruple> &get_quadruples();
-const std::vector<Quadruple> &get_functions();
-const std::vector<Quadruple> &get_main_record();
-
 /*Needed neuralgic points to generate quadruples*/
 void npq1_push_operand(const char *name);
 void npq2_push_add_sub(Op op);
