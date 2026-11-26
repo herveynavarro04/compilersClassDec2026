@@ -10,14 +10,6 @@ enum Segment {
     CONST = 3
 };
 
-struct DecodedAddress {
-    Segment seg;
-    Type type;
-    int offset;
-};
-
-bool decode_address(int addr, DecodedAddress &out);
-
 int alloc_address(Segment seg, Type type);
 void reset_local_memory();
 int get_constant_address(const std::string &value, Type type);
