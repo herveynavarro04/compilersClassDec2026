@@ -85,3 +85,16 @@ void print_constants() {
 int segment_count(Segment seg, Type type) {
     return seg_counter[seg][type];
 }
+
+void write_constants(FILE *out) {
+    std::fprintf(out, "GLOBALS %d %d\n",
+                 seg_counter[GLOBAL][INT_T], seg_counter[GLOBAL][FLOAT_T]);
+    std::map<int, std::string> by_address;
+    for (const auto &entry : constant_table) {
+        by_address[entry.second] = entry.first;
+    }
+    std::fprintf(out, "CONSTANTS %zu\n", by_address.size());
+    for (const auto &entry : by_address) {
+        std::fprintf(out, "%d %s\n", entry.first, entry.second.c_str());
+    }
+}

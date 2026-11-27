@@ -431,3 +431,27 @@ void npc7_return_value() {
     stack_operands.push(temp);
     stack_types.push(f.returnType);
 }
+
+static void write_record(FILE *out, const FuncRecord &f) {
+    std::fprintf(out, "%s %d %d %d %d %d %d %d %d",
+                 f.name.c_str(), f.start_quad, f.num_params,
+                 f.local_vars[0], f.local_vars[1],
+                 f.temp_vars[0], f.temp_vars[1], f.temp_vars[2],
+                 f.return_address);
+    for (int addr : f.param_addresses) {
+        std::fprintf(out, " %d", addr);
+    }
+    std::fprintf(out, "\n");
+}
+
+void write_obj(FILE *out) {
+    std::fprintf(out, "FUNCTIONS %zu\n", functions.size() + 1);
+    for (const FuncRecord &f : functions) {
+        write_record(out, f);
+    }
+    write_record(out, main_record);
+    std::fprintf(out, "QUADRUPLES %zu\n", quadruples.size());
+    for (const Quadruple &q : quadruples) {
+        std::fprintf(out, "%s %d %d %d\n", op_symbol(q.oper), q.left_op, q.right_op, q.result);
+    }
+}

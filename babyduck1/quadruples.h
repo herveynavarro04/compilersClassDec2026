@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <cstdio>
 #include "semantic_cube/semantic_cube.h"
 
 
@@ -75,3 +76,5 @@ void print_functions();
 
 /*Global count*/
 int get_global_count(Type type);
+
+void write_obj(FILE *out);
