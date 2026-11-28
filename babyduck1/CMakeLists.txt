@@ -61,3 +61,61 @@ foreach(phase syntax semantics quadruples statements functions)
         set_tests_properties(${phase}_invalid_${name} PROPERTIES WILL_FAIL TRUE)
     endforeach()
 endforeach()
+
+# ---------- Runtime tests (compiler + VM end-to-end) ----------
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+set(RUN_SCRIPT   ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_program.sh)
+set(VM_SCRIPT    ${CMAKE_CURRENT_SOURCE_DIR}/vm.py)
+set(RUNTIME_OUT  ${CMAKE_CURRENT_BINARY_DIR}/runtime_obj)
+file(MAKE_DIRECTORY ${RUNTIME_OUT})
+
+function(add_runtime_valid name expected)
+    set(input "")
+    if(ARGC GREATER 2)
+        set(input "${ARGV2}")
+    endif()
+    add_test(NAME runtime_valid_${name}
+        COMMAND bash ${RUN_SCRIPT}
+            $<TARGET_FILE:babyduck>
+            ${VM_SCRIPT}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/runtime/valid/${name}.bd
+            ${RUNTIME_OUT}/${name}.obj
+            "${input}")
+    set_tests_properties(runtime_valid_${name} PROPERTIES
+        PASS_REGULAR_EXPRESSION "${expected}")
+endfunction()
+
+function(add_runtime_invalid name)
+    set(input "")
+    if(ARGC GREATER 1)
+        set(input "${ARGV1}")
+    endif()
+    add_test(NAME runtime_invalid_${name}
+        COMMAND bash ${RUN_SCRIPT}
+            $<TARGET_FILE:babyduck>
+            ${VM_SCRIPT}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/runtime/invalid/${name}.bd
+            ${RUNTIME_OUT}/${name}.obj
+            "${input}")
+    set_tests_properties(runtime_invalid_${name} PROPERTIES
+        WILL_FAIL TRUE
+        FAIL_REGULAR_EXPRESSION "ACCEPTED: the program is valid")
+endfunction()
+
+add_runtime_valid(01_arithmetic   "14\n20\n6\n-7\n9\n")
+add_runtime_valid(02_intfloatdiv  "4\\.5\n9\\.5\n2\\.5\n2\\.0\n")
+add_runtime_valid(03_ifelse       "max=7\nsmall\ndifferent\n")
+add_runtime_valid(04_whilenested  "pairs=6\n")
+add_runtime_valid(05_printmix     "sum of 4 and 5 is 9\nproduct=20\nhello world\n")
+add_runtime_valid(06_voidfunc     "hello #1\nhello #2\nhello #3\nhello #10\n")
+add_runtime_valid(07_returnexpr   "r=25\n50\n")
+add_runtime_valid(08_multiparams  "r=7\\.5\nr=60\\.0\n")
+add_runtime_valid(09_nestedcalls  "r=12\nr=9\nr=8\n")
+add_runtime_valid(10_recursion
+    "fact\\(0\\)=1\nfact\\(1\\)=1\nfact\\(2\\)=2\nfact\\(3\\)=6\nfact\\(4\\)=24\nfact\\(5\\)=120\nfib\\(0\\)=0\nfib\\(1\\)=1\nfib\\(2\\)=1\nfib\\(3\\)=2\nfib\\(4\\)=3\nfib\\(5\\)=5\nfib\\(6\\)=8\n")
+add_runtime_valid(11_read         "a\\+b=11\na\\*b=28\n" "4\n7\n")
+
+add_runtime_invalid(01_divbyzero)
+add_runtime_invalid(02_uninitialized)
+add_runtime_invalid(03_readinvalid "hello\n")

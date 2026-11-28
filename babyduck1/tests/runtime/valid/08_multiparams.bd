@@ -1,0 +1,16 @@
+program multiparams;
+var r : float;
+float combine(a : int, b : int, c : float) [
+  var s : float;
+  {
+    s = (a + b) * c;
+    return s;
+  }
+];
+main {
+  r = combine(2, 3, 1.5);
+  print("r=", r);
+  r = combine(10, 20, 2.0);
+  print("r=", r);
+}
+end

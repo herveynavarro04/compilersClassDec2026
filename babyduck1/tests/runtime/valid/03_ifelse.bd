@@ -1,0 +1,21 @@
+program ifelse;
+var a, b, max : int;
+main {
+  a = 7;
+  b = 3;
+  if (a > b) {
+    max = a;
+  } else {
+    max = b;
+  };
+  print("max=", max);
+  if (a < 100) {
+    print("small");
+  };
+  if (a != b) {
+    print("different");
+  } else {
+    print("equal");
+  };
+}
+end

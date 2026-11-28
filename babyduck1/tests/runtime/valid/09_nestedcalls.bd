@@ -1,0 +1,17 @@
+program nestedcalls;
+var r : int;
+int inc(x : int) [
+  { return x + 1; }
+];
+int dbl(x : int) [
+  { return x * 2; }
+];
+main {
+  r = dbl(inc(5));
+  print("r=", r);
+  r = inc(dbl(inc(3)));
+  print("r=", r);
+  r = dbl(dbl(dbl(1)));
+  print("r=", r);
+}
+end

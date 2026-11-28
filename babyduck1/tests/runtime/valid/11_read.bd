@@ -1,0 +1,9 @@
+program readprog;
+var a, b : int;
+main {
+  read(a);
+  read(b);
+  print("a+b=", a + b);
+  print("a*b=", a * b);
+}
+end

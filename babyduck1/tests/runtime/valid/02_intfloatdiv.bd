@@ -1,0 +1,15 @@
+program intfloat;
+var
+  a, b : int;
+  q, r : float;
+main {
+  a = 9;
+  b = 2;
+  q = a / b;
+  r = a + 0.5;
+  print(q);
+  print(r);
+  print(10 / 4);
+  print(10 / 5);
+}
+end

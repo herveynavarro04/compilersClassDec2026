@@ -6,7 +6,26 @@
       "Bash(rmdir tests/valid tests/invalid)",
       "Bash(cmake -S . -B build)",
       "Bash(cmake --build build)",
-      "Bash(ctest --output-on-failure)"
+      "Bash(ctest --output-on-failure)",
+      "Bash(./build/babyduck tests/runtime/valid/01_arithmetic.bd -o /tmp/p.obj)",
+      "Read(//tmp/**)",
+      "Bash(./build/babyduck --help)",
+      "Bash(echo \"exit=$?\")",
+      "Read(//private/tmp/**)",
+      "Bash(/Users/herveynavarro/compilersClassDec2026/babyduck1/build/babyduck /Users/herveynavarro/compilersClassDec2026/babyduck1/tests/runtime/valid/01_arithmetic.bd -o /tmp/p.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/01_arithmetic.bd -o foo.obj)",
+      "Bash(python3 *)",
+      "Bash(./build/babyduck tests/runtime/valid/02_intfloatdiv.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/03_ifelse.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/04_whilenested.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/05_printmix.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/06_voidfunc.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/07_returnexpr.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/08_multiparams.bd -o foo.obj)",
+      "Bash(./build/babyduck tests/runtime/valid/09_nestedcalls.bd -o foo.obj)",
+      "Bash(chmod +x tests/run_program.sh)",
+      "Bash(bash tests/run_program.sh ./build/babyduck ./vm.py tests/runtime/valid/01_arithmetic.bd /tmp/t1.obj)",
+      "Bash(bash *)"
     ]
   }
 }

@@ -1,0 +1,11 @@
+program retexpr;
+var r : int;
+int square(x : int) [
+  { return x * x; }
+];
+main {
+  r = square(3) + square(4);
+  print("r=", r);
+  print(square(5) * 2);
+}
+end

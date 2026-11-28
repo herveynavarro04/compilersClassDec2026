@@ -1,0 +1,7 @@
+program readbad;
+var n : int;
+main {
+  read(n);
+  print(n);
+}
+end

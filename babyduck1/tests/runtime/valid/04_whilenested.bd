@@ -1,0 +1,18 @@
+program whilenested;
+var i, j, total : int;
+main {
+  i = 0;
+  total = 0;
+  while (i < 3) do {
+    j = 0;
+    while (j < 3) do {
+      if (i != j) {
+        total = total + 1;
+      };
+      j = j + 1;
+    };
+    i = i + 1;
+  };
+  print("pairs=", total);
+}
+end
